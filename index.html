@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">Book Finder</div>
+
+        <nav>
+            <button id="home-nav">Home</button>
+            <button id="favorites-nav">Favorites</button>
+            <button id="help-nav">Help</button>
+        </nav>
+    </header>
+
+    <main>
+
+        <section id="home-page">
+            <div class="search-container">
+
+                <h1>Find Your Next Book</h1>
+
+                <p>
+                    Search for books by title, author, or topic.
+                </p>
+
+                <div class="search-box">
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Search for a book..."
+                    >
+
+                    <button id="search-btn">
+                        Search
+                    </button>
+                </div>
+
+                <div class="trending">
+
+                    <h2>Trending Topics</h2>
+
+                    <div class="topic-buttons">
+
+                        <button
+                            class="topic-btn"
+                            data-topic="Computer Science"
+                        >
+                            Computer Science
+                        </button>
+
+                        <button
+                            class="topic-btn"
+                            data-topic="Literature"
+                        >
+                            Literature
+                        </button>
+
+                        <button
+                            class="topic-btn"
+                            data-topic="History"
+                        >
+                            History
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <section id="results-page" class="hidden">
+
+            <div class="page-container">
+
+                <div class="page-header">
+
+                    <button id="results-home-btn">
+                        ← Home
+                    </button>
+
+                    <h1>Search Results</h1>
+
+                </div>
+
+                <div id="results-list"></div>
+
+            </div>
+
+        </section>
+
+
+        <section id="favorites-page" class="hidden">
+
+            <div class="page-container">
+
+                <div class="page-header">
+
+                    <button id="favorites-home-btn">
+                        ← Home
+                    </button>
+
+                    <h1>My Favorites</h1>
+
+                </div>
+
+                <div id="favorites-list"></div>
+
+            </div>
+
+        </section>
+
+
+        <section id="details-page" class="hidden">
+
+            <div class="details-container">
+
+                <div class="details-navigation">
+
+                    <button id="details-back-btn">
+                        ← Back
+                    </button>
+
+                    <button id="details-home-btn">
+                        Home
+                    </button>
+
+                </div>
+
+                <div class="book-details">
+
+                    <img
+                        id="book-cover"
+                        src=""
+                        alt="Book Cover"
+                    >
+
+                    <div class="book-info">
+
+                        <h1 id="book-title"></h1>
+
+                        <p>
+                            <strong>Author:</strong>
+                            <span id="book-author"></span>
+                        </p>
+
+                        <p>
+                            <strong>Publisher:</strong>
+                            <span id="book-publisher"></span>
+                        </p>
+
+                        <p>
+                            <strong>Published:</strong>
+                            <span id="book-date"></span>
+                        </p>
+
+                        <p>
+                            <strong>Pages:</strong>
+                            <span id="book-pages"></span>
+                        </p>
+
+                        <button id="favorite-btn">
+                            Add to Favorites
+                        </button>
+
+                        <a
+                            id="open-book-btn"
+                            href="#"
+                            target="_blank"
+                        >
+                            Open Library
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="description">
+
+                    <h2>Description</h2>
+
+                    <p id="book-description"></p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section id="help-page" class="hidden">
+
+            <div class="message-container">
+
+                <button id="help-back-btn">
+                    ← Back
+                </button>
+
+                <h2>How to Use Book Finder</h2>
+
+                <p>
+                    Search for a book using the search box.
+                </p>
+
+                <p>
+                    You can also select one of the trending topics.
+                </p>
+
+                <p>
+                    Click View Details to see more information about a book.
+                </p>
+
+                <p>
+                    Click Add to Favorites to save a book.
+                </p>
+
+                <p>
+                    Your favorite books are saved in your browser.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <section id="message-page" class="hidden">
+
+            <div class="message-container">
+
+                <button id="message-back-btn">
+                    ← Back
+                </button>
+
+                <h2 id="message-title"></h2>
+
+                <p id="message-text"></p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
