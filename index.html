@@ -9,18 +9,23 @@
 <body>
 
     <header class="navbar">
-        <div class="logo">Book Finder</div>
+
+        <div class="logo">
+            Book Finder
+        </div>
 
         <nav>
             <button id="home-nav">Home</button>
             <button id="favorites-nav">Favorites</button>
             <button id="help-nav">Help</button>
         </nav>
+
     </header>
 
     <main>
 
         <section id="home-page">
+
             <div class="search-container">
 
                 <h1>Find Your Next Book</h1>
@@ -30,6 +35,7 @@
                 </p>
 
                 <div class="search-box">
+
                     <input
                         type="text"
                         id="search-input"
@@ -39,11 +45,12 @@
                     <button id="search-btn">
                         Search
                     </button>
+
                 </div>
 
                 <div class="trending">
 
-                    <h2>Trending Topics</h2>
+                    <h2>Categories</h2>
 
                     <div class="topic-buttons">
 
@@ -68,11 +75,33 @@
                             History
                         </button>
 
+                        <button
+                            class="topic-btn"
+                            data-topic="Science"
+                        >
+                            Science
+                        </button>
+
+                        <button
+                            class="topic-btn"
+                            data-topic="Fantasy"
+                        >
+                            Fantasy
+                        </button>
+
+                        <button
+                            class="topic-btn"
+                            data-topic="Mystery"
+                        >
+                            Mystery
+                        </button>
+
                     </div>
 
                 </div>
 
             </div>
+
         </section>
 
 
@@ -80,11 +109,9 @@
 
             <div class="loading-container">
 
-                <div class="loading-book">
-                    
-                </div>
+                <div class="loading-book"></div>
 
-                <h1>Fetching books...</h1>
+                <h1>Fetching books....</h1>
 
                 <p>
                     Book look is looking for your book :3
@@ -101,11 +128,13 @@
 
                 <div class="page-header">
 
-                    <button id="results-home-btn">
-                        ← Home
+                    <button id="results-back-btn">
+                        ← Back
                     </button>
 
-                    <h1>Search Results</h1>
+                    <h1 id="results-title">
+                        Search Results
+                    </h1>
 
                 </div>
 
@@ -122,11 +151,45 @@
 
                 <div class="page-header">
 
-                    <button id="favorites-home-btn">
-                        ← Home
+                    <button id="favorites-back-btn">
+                        ← Back
                     </button>
 
-                    <h1>My Favorites</h1>
+                    <h1>
+                        My Favorites
+                    </h1>
+
+                </div>
+
+                <div class="favorite-filter">
+
+                    <label for="favorite-status-filter">
+                        Filter by Status:
+                    </label>
+
+                    <select id="favorite-status-filter">
+
+                        <option value="All">
+                            All
+                        </option>
+
+                        <option value="Want to Read">
+                            Want to Read
+                        </option>
+
+                        <option value="Reading">
+                            Reading
+                        </option>
+
+                        <option value="Completed">
+                            Completed
+                        </option>
+
+                        <option value="On Hold">
+                            On Hold
+                        </option>
+
+                    </select>
 
                 </div>
 
@@ -145,10 +208,6 @@
 
                     <button id="details-back-btn">
                         ← Back
-                    </button>
-
-                    <button id="details-home-btn">
-                        Home
                     </button>
 
                 </div>
@@ -185,9 +244,65 @@
                             <span id="book-pages"></span>
                         </p>
 
-                        <button id="favorite-btn">
-                            Add to Favorites
-                        </button>
+                        <div class="genre-section">
+
+                            <strong>Genres:</strong>
+
+                            <div id="book-genres">
+                                <span>Loading genres...</span>
+                            </div>
+
+                        </div>
+
+                        <div class="favorite-area">
+
+                            <button id="favorite-btn">
+                                Add to Favorites
+                            </button>
+
+                            <div
+                                id="favorite-status-container"
+                                class="hidden"
+                            >
+
+                                <label for="favorite-status">
+                                    Reading Status
+                                </label>
+
+                                <select id="favorite-status">
+
+                                    <option value="Want to Read">
+                                        Want to Read
+                                    </option>
+
+                                    <option value="Reading">
+                                        Reading
+                                    </option>
+
+                                    <option value="Completed">
+                                        Completed
+                                    </option>
+
+                                    <option value="On Hold">
+                                        On Hold
+                                    </option>
+
+                                </select>
+
+                                <button id="save-favorite-btn">
+                                    Save to Favorites
+                                </button>
+
+                                <button
+                                    id="remove-favorite-btn"
+                                    class="hidden"
+                                >
+                                    Remove from Favorites
+                                </button>
+
+                            </div>
+
+                        </div>
 
                         <a
                             id="open-book-btn"
@@ -205,7 +320,9 @@
 
                     <h2>Description</h2>
 
-                    <p id="book-description"></p>
+                    <p id="book-description">
+                        Loading description...
+                    </p>
 
                 </div>
 
@@ -222,14 +339,16 @@
                     ← Back
                 </button>
 
-                <h2>How to Use Book Finder</h2>
+                <h2>
+                    How to Use Book Finder
+                </h2>
 
                 <p>
                     Search for a book using the search box.
                 </p>
 
                 <p>
-                    You can also select one of the trending topics.
+                    You can also select one of the categories.
                 </p>
 
                 <p>
@@ -237,7 +356,11 @@
                 </p>
 
                 <p>
-                    Click Add to Favorites to save a book.
+                    Click a genre to find more books from that genre.
+                </p>
+
+                <p>
+                    Click Add to Favorites and choose a reading status.
                 </p>
 
                 <p>

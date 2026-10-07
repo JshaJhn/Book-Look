@@ -1,40 +1,41 @@
-const homePage = document.getElementById('home-page');
-const loadingPage = document.getElementById('loading-page');
-const resultsPage = document.getElementById('results-page');
-const favoritesPage = document.getElementById('favorites-page');
-const detailsPage = document.getElementById('details-page');
-const helpPage = document.getElementById('help-page');
-const messagePage = document.getElementById('message-page');
+const homePage = document.getElementById("home-page");
+const loadingPage = document.getElementById("loading-page");
+const resultsPage = document.getElementById("results-page");
+const favoritesPage = document.getElementById("favorites-page");
+const detailsPage = document.getElementById("details-page");
+const helpPage = document.getElementById("help-page");
+const messagePage = document.getElementById("message-page");
 
-const searchInput = document.getElementById('search-input');
-const searchBtn = document.getElementById('search-btn');
-const resultsList = document.getElementById('results-list');
-const favoritesList = document.getElementById('favorites-list');
+const searchInput = document.getElementById("search-input");
+const searchBtn = document.getElementById("search-btn");
 
-const homeNav = document.getElementById('home-nav');
-const favoritesNav = document.getElementById('favorites-nav');
-const helpNav = document.getElementById('help-nav');
+const resultsList = document.getElementById("results-list");
+const resultsTitle = document.getElementById("results-title");
 
-const resultsHomeBtn = document.getElementById('results-home-btn');
-const favoritesHomeBtn = document.getElementById('favorites-home-btn');
+const favoritesList = document.getElementById("favorites-list");
+const favoriteStatusFilter = document.getElementById("favorite-status-filter");
 
-const detailsBackBtn = document.getElementById('details-back-btn');
-const detailsHomeBtn = document.getElementById('details-home-btn');
+const bookCover = document.getElementById("book-cover");
+const bookTitle = document.getElementById("book-title");
+const bookAuthor = document.getElementById("book-author");
+const bookPublisher = document.getElementById("book-publisher");
+const bookDate = document.getElementById("book-date");
+const bookPages = document.getElementById("book-pages");
+const bookGenres = document.getElementById("book-genres");
+const bookDescription = document.getElementById("book-description");
+const openBookBtn = document.getElementById("open-book-btn");
 
-const helpBackBtn = document.getElementById('help-back-btn');
-const messageBackBtn = document.getElementById('message-back-btn');
-
-const favoriteBtn = document.getElementById('favorite-btn');
-const openBookBtn = document.getElementById('open-book-btn');
-
-const messageTitle = document.getElementById('message-title');
-const messageText = document.getElementById('message-text');
+const favoriteBtn = document.getElementById("favorite-btn");
+const favoriteStatusContainer = document.getElementById("favorite-status-container");
+const favoriteStatus = document.getElementById("favorite-status");
+const saveFavoriteBtn = document.getElementById("save-favorite-btn");
+const removeFavoriteBtn = document.getElementById("remove-favorite-btn");
 
 let currentBook = null;
-let previousPage = resultsPage;
+let pageHistory = [];
 
-function showPage(pageToShow) {
-    [
+function showPage(page, addToHistory = true) {
+    const pages = [
         homePage,
         loadingPage,
         resultsPage,
@@ -42,342 +43,726 @@ function showPage(pageToShow) {
         detailsPage,
         helpPage,
         messagePage
-    ].forEach(page => {
-        page.classList.add('hidden');
+    ];
+
+    const currentPage = pages.find(
+        pageElement => !pageElement.classList.contains("hidden")
+    );
+
+    if (
+        addToHistory &&
+        currentPage &&
+        currentPage !== page &&
+        currentPage !== loadingPage &&
+        currentPage !== messagePage
+    ) {
+        pageHistory.push(currentPage);
+    }
+
+    pages.forEach(pageElement => {
+        pageElement.classList.add("hidden");
     });
 
-    pageToShow.classList.remove('hidden');
+    page.classList.remove("hidden");
+}
+
+function goBack() {
+    if (pageHistory.length === 0) {
+        showPage(homePage, false);
+        return;
+    }
+
+    const previousPage = pageHistory.pop();
+
+    showPage(previousPage, false);
+}
+
+function showLoading() {
+    showPage(loadingPage);
 }
 
 function showMessage(title, text) {
-    messageTitle.textContent = title;
-    messageText.textContent = text;
+    document.getElementById("message-title").textContent = title;
+    document.getElementById("message-text").textContent = text;
 
     showPage(messagePage);
 }
 
-homeNav.addEventListener('click', () => {
-    showPage(homePage);
+document.getElementById("home-nav").addEventListener("click", () => {
+    pageHistory = [];
+    showPage(homePage, false);
 });
 
-favoritesNav.addEventListener('click', () => {
+document.getElementById("favorites-nav").addEventListener("click", () => {
     renderFavorites();
     showPage(favoritesPage);
 });
 
-helpNav.addEventListener('click', () => {
+document.getElementById("help-nav").addEventListener("click", () => {
     showPage(helpPage);
 });
 
-resultsHomeBtn.addEventListener('click', () => {
-    showPage(homePage);
+document.getElementById("results-back-btn").addEventListener("click", () => {
+    goBack();
 });
 
-favoritesHomeBtn.addEventListener('click', () => {
-    showPage(homePage);
+document.getElementById("favorites-back-btn").addEventListener("click", () => {
+    goBack();
 });
 
-detailsHomeBtn.addEventListener('click', () => {
-    showPage(homePage);
+document.getElementById("details-back-btn").addEventListener("click", () => {
+    goBack();
 });
 
-detailsBackBtn.addEventListener('click', () => {
-    showPage(previousPage);
+document.getElementById("help-back-btn").addEventListener("click", () => {
+    goBack();
 });
 
-helpBackBtn.addEventListener('click', () => {
-    showPage(homePage);
+document.getElementById("message-back-btn").addEventListener("click", () => {
+    goBack();
 });
 
-messageBackBtn.addEventListener('click', () => {
-    showPage(homePage);
+searchBtn.addEventListener("click", () => {
+    const query = searchInput.value.trim();
+
+    if (!query) {
+        showMessage(
+            "Search Required",
+            "Please enter a book title, author, or topic."
+        );
+        return;
+    }
+
+    startSearch(query);
 });
 
-searchBtn.addEventListener('click', () => {
-    startSearch(searchInput.value);
-});
+searchInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        const query = searchInput.value.trim();
 
-searchInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-        startSearch(searchInput.value);
+        if (!query) {
+            showMessage(
+                "Search Required",
+                "Please enter a book title, author, or topic."
+            );
+            return;
+        }
+
+        startSearch(query);
     }
 });
 
-document.querySelectorAll('.topic-btn').forEach(button => {
-    button.addEventListener('click', e => {
-        const topic = e.target.getAttribute('data-topic');
-
-        searchInput.value = topic;
+document.querySelectorAll(".topic-btn").forEach(button => {
+    button.addEventListener("click", () => {
+        const topic = button.dataset.topic;
 
         startSearch(topic);
     });
 });
 
-favoriteBtn.addEventListener('click', () => {
-    if (!currentBook) {
-        return;
-    }
-
-    toggleFavorite(currentBook);
-
-    updateFavoriteButton();
+favoriteStatusFilter.addEventListener("change", () => {
+    renderFavorites();
 });
 
-function startSearch(query) {
-    const cleanQuery = query.trim();
+async function startSearch(query) {
+    showLoading();
 
-    if (!cleanQuery) {
+    try {
+        const books = await getBooks(query);
+
+        resultsTitle.textContent = `Results for "${query}"`;
+
+        renderResults(books);
+
+        showPage(resultsPage);
+    } catch (error) {
         showMessage(
-            'Input Required',
-            'Please type a keyword to search for books.'
+            "Something went wrong",
+            "Unable to find books right now. Please try again."
         );
-
-        return;
     }
-
-    getBooks(cleanQuery);
 }
 
-function getBooks(query) {
-    showPage(loadingPage);
+async function getBooks(query) {
+    const url =
+        `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=20`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error("Search request failed");
+    }
+
+    const data = await response.json();
+
+    return data.docs || [];
+}
+
+async function getGenreBooks(genre) {
+    const subject = encodeURIComponent(
+        genre.toLowerCase().replace(/\s+/g, "_")
+    );
 
     const url =
-        `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=10`;
+        `https://openlibrary.org/subjects/${subject}.json?limit=20`;
 
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch book data.');
-            }
+    const response = await fetch(url);
 
-            return response.json();
-        })
-        .then(data => {
-            if (!data.docs || data.docs.length === 0) {
-                showMessage(
-                    'No Results Found',
-                    'No books matched your search term.'
-                );
-
-                return;
-            }
-
-            renderResults(data.docs);
-
-            previousPage = resultsPage;
-
-            showPage(resultsPage);
-        })
-        .catch(error => {
-            console.error('Search Error:', error);
-
-            showMessage(
-                'Search Error',
-                error.message ||
-                'Something went wrong while getting book data.'
-            );
-        });
-}
-
-function getBookCover(book, size = 'M') {
-    if (!book.cover_i) {
-        return '';
+    if (!response.ok) {
+        throw new Error("Genre request failed");
     }
 
-    return `https://covers.openlibrary.org/b/id/${book.cover_i}-${size}.jpg`;
+    const data = await response.json();
+
+    return (data.works || []).map(book => ({
+        key: book.key,
+        title: book.title,
+        author_name: book.authors
+            ? book.authors.map(author => author.name)
+            : [],
+        cover_i: book.cover_id,
+        first_publish_year: book.first_publish_year
+    }));
+}
+
+function getBookCover(book) {
+    if (book.cover_i) {
+        return `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`;
+    }
+
+    if (book.cover_id) {
+        return `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`;
+    }
+
+    return "https://via.placeholder.com/150x220?text=No+Cover";
 }
 
 function getAuthor(book) {
-    if (!book.author_name) {
-        return 'Unknown Author';
+    if (book.author_name && book.author_name.length > 0) {
+        return book.author_name.join(", ");
     }
 
-    return book.author_name.join(', ');
+    return "Unknown Author";
 }
 
-function createBookCard(book, isFavorite = false) {
-    const title = book.title || 'Untitled';
+function getBookKey(book) {
+    return book.key || "";
+}
 
-    const author = getAuthor(book);
+function createBookCard(book) {
+    const card = document.createElement("div");
 
-    const cover = getBookCover(book);
+    card.className = "book-card";
 
-    const card = document.createElement('div');
+    const cover = document.createElement("img");
 
-    card.className = 'book-card';
+    cover.src = getBookCover(book);
+    cover.alt = book.title || "Book Cover";
 
-    card.innerHTML = `
-        <img src="${cover}" alt="Cover">
+    const info = document.createElement("div");
 
-        <div>
-            <h3>${title}</h3>
+    info.className = "book-card-info";
 
-            <p>
-                <strong>Author:</strong>
-                ${author}
-            </p>
+    const title = document.createElement("h2");
 
-            <div class="card-buttons">
+    title.textContent =
+        book.title || "Unknown Title";
 
-                <button class="view-btn">
-                    View Details
-                </button>
+    const author = document.createElement("p");
 
-                ${
-                    isFavorite
-                    ?
-                    `<button class="favorite-card-btn">
-                        Remove Favorite
-                    </button>`
-                    :
-                    `<button class="favorite-card-btn">
-                        Add Favorite
-                    </button>`
-                }
+    author.textContent =
+        `Author: ${getAuthor(book)}`;
 
-                <a
-                    href="https://openlibrary.org${book.key || ''}"
-                    target="_blank"
-                >
-                    Open Library
-                </a>
+    const year = document.createElement("p");
 
-            </div>
-        </div>
-    `;
+    year.textContent =
+        `Published: ${book.first_publish_year || "Unknown"}`;
 
-    card.querySelector('.view-btn').addEventListener('click', () => {
-        previousPage = isFavorite ? favoritesPage : resultsPage;
+    const buttons = document.createElement("div");
 
+    buttons.className = "book-card-buttons";
+
+    const detailsButton = document.createElement("button");
+
+    detailsButton.textContent = "View Details";
+
+    detailsButton.addEventListener("click", () => {
         showDetails(book);
     });
 
-    card.querySelector('.favorite-card-btn').addEventListener('click', () => {
-        toggleFavorite(book);
+    const favoriteButton = document.createElement("button");
 
-        if (isFavorite) {
-            renderFavorites();
-        } else {
-            renderResults(window.lastResults || []);
-        }
+    if (getFavorite(book)) {
+        favoriteButton.textContent = "View Favorite";
+    } else {
+        favoriteButton.textContent = "Add to Favorites";
+    }
+
+    favoriteButton.addEventListener("click", () => {
+        showDetails(book);
+
+        setTimeout(() => {
+            favoriteStatusContainer.classList.remove("hidden");
+        }, 100);
     });
+
+    buttons.appendChild(detailsButton);
+    buttons.appendChild(favoriteButton);
+
+    info.appendChild(title);
+    info.appendChild(author);
+    info.appendChild(year);
+    info.appendChild(buttons);
+
+    card.appendChild(cover);
+    card.appendChild(info);
 
     return card;
 }
 
 function renderResults(books) {
-    window.lastResults = books;
+    resultsList.innerHTML = "";
 
-    resultsList.innerHTML = '';
-
-    books.forEach(book => {
-        const card = createBookCard(book);
-
-        resultsList.appendChild(card);
-    });
-}
-
-function renderFavorites() {
-    const favorites = getFavorites();
-
-    favoritesList.innerHTML = '';
-
-    if (favorites.length === 0) {
-        favoritesList.innerHTML = `
-            <div class="empty-message">
-                <h2>No Favorite Books</h2>
-                <p>
-                    You haven't added any books to your favorites yet.
-                </p>
+    if (!books || books.length === 0) {
+        resultsList.innerHTML = `
+            <div class="no-results">
+                <h2>No books found</h2>
+                <p>Try searching for another title, author, or topic.</p>
             </div>
         `;
 
         return;
     }
 
-    favorites.forEach(book => {
-        const card = createBookCard(book, true);
-
-        favoritesList.appendChild(card);
+    books.forEach(book => {
+        resultsList.appendChild(createBookCard(book));
     });
 }
 
-function showDetails(book) {
+async function showDetails(book) {
     currentBook = book;
 
-    document.getElementById('book-title').textContent =
-        book.title || 'Untitled';
+    bookTitle.textContent =
+        book.title || "Unknown Title";
 
-    document.getElementById('book-author').textContent =
+    bookAuthor.textContent =
         getAuthor(book);
 
-    document.getElementById('book-publisher').textContent =
-        book.publisher
-            ? book.publisher[0]
-            : 'N/A';
+    bookPublisher.textContent =
+        "Loading...";
 
-    document.getElementById('book-date').textContent =
-        book.first_publish_year || 'N/A';
+    bookDate.textContent =
+        book.first_publish_year || "Unknown";
 
-    document.getElementById('book-pages').textContent =
-        book.number_of_pages_median || 'N/A';
+    bookPages.textContent =
+        "Loading...";
 
-    document.getElementById('book-cover').src =
-        getBookCover(book, 'L');
+    bookDescription.textContent =
+        "Loading description...";
 
-    document.getElementById('book-description').textContent =
-        'No description available.';
+    bookGenres.innerHTML =
+        "<span>Loading genres...</span>";
 
-    openBookBtn.href =
-        `https://openlibrary.org${book.key || ''}`;
+    bookCover.src =
+        getBookCover(book);
+
+    const workKey =
+        getBookKey(book);
+
+    if (workKey) {
+        openBookBtn.href =
+            `https://openlibrary.org${workKey}`;
+    } else {
+        openBookBtn.href =
+            "https://openlibrary.org";
+    }
 
     updateFavoriteButton();
 
+    favoriteStatusContainer.classList.add("hidden");
+
+    if (getFavorite(book)) {
+        favoriteStatusContainer.classList.remove("hidden");
+    }
+
     showPage(detailsPage);
+
+    await loadBookDetails(book);
 }
 
-function getFavorites() {
-    const favorites =
-        localStorage.getItem('bookFavorites');
+async function loadBookDetails(book) {
+    const workKey =
+        getBookKey(book);
 
-    if (!favorites) {
+    if (!workKey) {
+        bookPublisher.textContent =
+            "Unknown";
+
+        bookPages.textContent =
+            "Unknown";
+
+        bookGenres.innerHTML =
+            "<span>No genres available</span>";
+
+        bookDescription.textContent =
+            "No description available.";
+
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `https://openlibrary.org${workKey}.json`
+        );
+
+        if (!response.ok) {
+            throw new Error("Details request failed");
+        }
+
+        const work =
+            await response.json();
+
+        const publishers =
+            work.publishers || [];
+
+        bookPublisher.textContent =
+            publishers.length > 0
+                ? publishers.join(", ")
+                : "Unknown";
+
+        bookPages.textContent =
+            work.number_of_pages ||
+            book.number_of_pages_median ||
+            "Unknown";
+
+        const genres =
+            getWorkGenres(work, book);
+
+        renderGenres(genres);
+
+        bookDescription.textContent =
+            getDescription(work);
+
+        saveLoadedDetails(
+            book,
+            work,
+            genres
+        );
+
+        updateFavoriteButton();
+
+    } catch (error) {
+
+        bookPublisher.textContent =
+            "Unknown";
+
+        bookPages.textContent =
+            book.number_of_pages_median ||
+            "Unknown";
+
+        renderGenres(
+            getFallbackGenres(book)
+        );
+
+        bookDescription.textContent =
+            "No description available.";
+    }
+}
+
+function getWorkGenres(work, book) {
+    const subjects =
+        work.subjects || [];
+
+    const genres = subjects
+        .map(subject => {
+
+            if (typeof subject === "string") {
+                return subject;
+            }
+
+            if (subject && subject.name) {
+                return subject.name;
+            }
+
+            return "";
+        })
+        .filter(Boolean)
+        .map(subject => subject.trim())
+        .filter(subject => subject.length > 0);
+
+    const uniqueGenres =
+        [...new Set(genres)];
+
+    if (uniqueGenres.length > 0) {
+        return uniqueGenres.slice(0, 15);
+    }
+
+    return getFallbackGenres(book);
+}
+
+function getFallbackGenres(book) {
+    const subjects =
+        book.subject || [];
+
+    if (!Array.isArray(subjects)) {
         return [];
     }
 
-    return JSON.parse(favorites);
+    return [
+        ...new Set(
+            subjects
+                .map(subject => String(subject).trim())
+                .filter(Boolean)
+        )
+    ].slice(0, 15);
+}
+
+function renderGenres(genres) {
+    bookGenres.innerHTML = "";
+
+    if (!genres || genres.length === 0) {
+        bookGenres.innerHTML =
+            "<span>No genres available</span>";
+
+        return;
+    }
+
+    genres.forEach(genre => {
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "genre-btn";
+
+        button.textContent =
+            genre;
+
+        button.addEventListener("click", async () => {
+
+            showLoading();
+
+            try {
+
+                const books =
+                    await getGenreBooks(genre);
+
+                resultsTitle.textContent =
+                    `Books in "${genre}"`;
+
+                renderResults(books);
+
+                showPage(resultsPage);
+
+            } catch (error) {
+
+                showMessage(
+                    "Genre Unavailable",
+                    "Unable to load books from this genre right now."
+                );
+            }
+        });
+
+        bookGenres.appendChild(button);
+    });
+}
+
+function getDescription(work) {
+    if (!work.description) {
+        return "No description available.";
+    }
+
+    if (typeof work.description === "string") {
+        return work.description;
+    }
+
+    if (work.description.value) {
+        return work.description.value;
+    }
+
+    return "No description available.";
+}
+
+function saveLoadedDetails(book, work, genres) {
+    const favorite =
+        getFavorite(book);
+
+    if (!favorite) {
+        return;
+    }
+
+    const favorites =
+        getFavorites();
+
+    const updatedFavorites =
+        favorites.map(item => {
+
+            if (
+                getBookKey(item) !==
+                getBookKey(book)
+            ) {
+                return item;
+            }
+
+            return {
+                ...item,
+                publisher: work.publishers
+                    ? work.publishers.join(", ")
+                    : item.publisher,
+                pages:
+                    work.number_of_pages ||
+                    item.pages ||
+                    book.number_of_pages_median,
+                description:
+                    getDescription(work),
+                genres: genres
+            };
+        });
+
+    saveFavorites(updatedFavorites);
+}
+
+function getFavorites() {
+    try {
+
+        const favorites =
+            JSON.parse(
+                localStorage.getItem(
+                    "bookFavorites"
+                )
+            );
+
+        return Array.isArray(favorites)
+            ? favorites
+            : [];
+
+    } catch {
+
+        return [];
+    }
 }
 
 function saveFavorites(favorites) {
     localStorage.setItem(
-        'bookFavorites',
+        "bookFavorites",
         JSON.stringify(favorites)
     );
 }
 
-function isFavorite(book) {
-    const favorites = getFavorites();
+function getFavorite(book) {
+    const favorites =
+        getFavorites();
 
-    return favorites.some(favorite => {
-        return favorite.key === book.key;
-    });
+    const key =
+        getBookKey(book);
+
+    return favorites.find(
+        item =>
+            getBookKey(item) === key
+    );
 }
 
-function toggleFavorite(book) {
-    let favorites = getFavorites();
+function saveFavorite() {
+    if (!currentBook) {
+        return;
+    }
 
-    const exists = favorites.some(favorite => {
-        return favorite.key === book.key;
-    });
+    const favorites =
+        getFavorites();
 
-    if (exists) {
-        favorites = favorites.filter(favorite => {
-            return favorite.key !== book.key;
-        });
+    const existingIndex =
+        favorites.findIndex(
+            item =>
+                getBookKey(item) ===
+                getBookKey(currentBook)
+        );
+
+    const favoriteBook = {
+        ...currentBook,
+        status:
+            favoriteStatus.value
+    };
+
+    if (existingIndex >= 0) {
+
+        favorites[existingIndex] = {
+            ...favorites[existingIndex],
+            ...favoriteBook
+        };
+
     } else {
-        favorites.push(book);
+
+        favorites.push(
+            favoriteBook
+        );
     }
 
     saveFavorites(favorites);
+
+    updateFavoriteButton();
+
+    favoriteStatusContainer.classList.remove(
+        "hidden"
+    );
+
+    removeFavoriteBtn.classList.remove(
+        "hidden"
+    );
+
+    saveFavoriteBtn.textContent =
+        "Saved";
+}
+
+function removeFavorite() {
+    if (!currentBook) {
+        return;
+    }
+
+    const favorites =
+        getFavorites();
+
+    const updatedFavorites =
+        favorites.filter(
+            item =>
+                getBookKey(item) !==
+                getBookKey(currentBook)
+        );
+
+    saveFavorites(updatedFavorites);
+
+    favoriteStatusContainer.classList.add(
+        "hidden"
+    );
+
+    updateFavoriteButton();
+
+    renderFavorites();
+}
+
+function updateFavoriteStatus(
+    bookKey,
+    status
+) {
+    const favorites =
+        getFavorites();
+
+    const updatedFavorites =
+        favorites.map(book => {
+
+            if (
+                getBookKey(book) ===
+                bookKey
+            ) {
+                return {
+                    ...book,
+                    status: status
+                };
+            }
+
+            return book;
+        });
+
+    saveFavorites(updatedFavorites);
 }
 
 function updateFavoriteButton() {
@@ -385,9 +770,296 @@ function updateFavoriteButton() {
         return;
     }
 
-    if (isFavorite(currentBook)) {
-        favoriteBtn.textContent = 'Remove from Favorites';
+    const favorite =
+        getFavorite(currentBook);
+
+    if (favorite) {
+
+        favoriteBtn.textContent =
+            "Favorite Saved";
+
+        favoriteStatus.value =
+            favorite.status ||
+            "Want to Read";
+
+        removeFavoriteBtn.classList.remove(
+            "hidden"
+        );
+
     } else {
-        favoriteBtn.textContent = 'Add to Favorites';
+
+        favoriteBtn.textContent =
+            "Add to Favorites";
+
+        favoriteStatus.value =
+            "Want to Read";
+
+        removeFavoriteBtn.classList.add(
+            "hidden"
+        );
     }
 }
+
+function renderFavorites() {
+    favoritesList.innerHTML = "";
+
+    const favorites =
+        getFavorites();
+
+    const selectedStatus =
+        favoriteStatusFilter.value;
+
+    const filteredFavorites =
+        selectedStatus === "All"
+            ? favorites
+            : favorites.filter(
+                book =>
+                    (book.status ||
+                        "Want to Read") ===
+                    selectedStatus
+            );
+
+    if (filteredFavorites.length === 0) {
+
+        favoritesList.innerHTML = `
+            <div class="no-results">
+                <h2>No favorite books</h2>
+                <p>Add books to your favorites to see them here.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    filteredFavorites.forEach(book => {
+
+        const card =
+            createFavoriteCard(book);
+
+        favoritesList.appendChild(card);
+    });
+}
+
+function createFavoriteCard(book) {
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "book-card";
+
+    const cover =
+        document.createElement("img");
+
+    cover.src =
+        getBookCover(book);
+
+    cover.alt =
+        book.title ||
+        "Book Cover";
+
+    const info =
+        document.createElement("div");
+
+    info.className =
+        "book-card-info";
+
+    const title =
+        document.createElement("h2");
+
+    title.textContent =
+        book.title ||
+        "Unknown Title";
+
+    const author =
+        document.createElement("p");
+
+    author.textContent =
+        `Author: ${getAuthor(book)}`;
+
+    const statusLabel =
+        document.createElement("span");
+
+    statusLabel.className =
+        "favorite-status-label";
+
+    statusLabel.textContent =
+        book.status ||
+        "Want to Read";
+
+    const statusControl =
+        document.createElement("div");
+
+    statusControl.className =
+        "favorite-status-control";
+
+    const statusSelect =
+        document.createElement("select");
+
+    const statuses = [
+        "Want to Read",
+        "Reading",
+        "Completed",
+        "On Hold"
+    ];
+
+    statuses.forEach(status => {
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            status;
+
+        option.textContent =
+            status;
+
+        if (
+            (book.status ||
+                "Want to Read") ===
+            status
+        ) {
+            option.selected = true;
+        }
+
+        statusSelect.appendChild(
+            option
+        );
+    });
+
+    const updateButton =
+        document.createElement("button");
+
+    updateButton.textContent =
+        "Update";
+
+    updateButton.addEventListener(
+        "click",
+        () => {
+
+            updateFavoriteStatus(
+                getBookKey(book),
+                statusSelect.value
+            );
+
+            statusLabel.textContent =
+                statusSelect.value;
+        }
+    );
+
+    statusControl.appendChild(
+        statusSelect
+    );
+
+    statusControl.appendChild(
+        updateButton
+    );
+
+    const buttons =
+        document.createElement("div");
+
+    buttons.className =
+        "book-card-buttons";
+
+    const detailsButton =
+        document.createElement("button");
+
+    detailsButton.textContent =
+        "View Details";
+
+    detailsButton.addEventListener(
+        "click",
+        () => {
+            showDetails(book);
+        }
+    );
+
+    const removeButton =
+        document.createElement("button");
+
+    removeButton.textContent =
+        "Remove Favorite";
+
+    removeButton.addEventListener(
+        "click",
+        () => {
+
+            const favorites =
+                getFavorites();
+
+            const updatedFavorites =
+                favorites.filter(
+                    item =>
+                        getBookKey(item) !==
+                        getBookKey(book)
+                );
+
+            saveFavorites(
+                updatedFavorites
+            );
+
+            renderFavorites();
+        }
+    );
+
+    buttons.appendChild(
+        detailsButton
+    );
+
+    buttons.appendChild(
+        removeButton
+    );
+
+    info.appendChild(title);
+    info.appendChild(author);
+    info.appendChild(statusLabel);
+    info.appendChild(statusControl);
+    info.appendChild(buttons);
+
+    card.appendChild(cover);
+    card.appendChild(info);
+
+    return card;
+}
+
+favoriteBtn.addEventListener(
+    "click",
+    () => {
+
+        const favorite =
+            getFavorite(currentBook);
+
+        if (favorite) {
+
+            favoriteStatusContainer.classList.remove(
+                "hidden"
+            );
+
+            return;
+        }
+
+        favoriteStatusContainer.classList.remove(
+            "hidden"
+        );
+
+        removeFavoriteBtn.classList.add(
+            "hidden"
+        );
+
+        saveFavoriteBtn.textContent =
+            "Save to Favorites";
+    }
+);
+
+saveFavoriteBtn.addEventListener(
+    "click",
+    () => {
+        saveFavorite();
+    }
+);
+
+removeFavoriteBtn.addEventListener(
+    "click",
+    () => {
+        removeFavorite();
+    }
+);
