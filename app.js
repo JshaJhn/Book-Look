@@ -1,4 +1,5 @@
 const homePage = document.getElementById('home-page');
+const loadingPage = document.getElementById('loading-page');
 const resultsPage = document.getElementById('results-page');
 const favoritesPage = document.getElementById('favorites-page');
 const detailsPage = document.getElementById('details-page');
@@ -35,6 +36,7 @@ let previousPage = resultsPage;
 function showPage(pageToShow) {
     [
         homePage,
+        loadingPage,
         resultsPage,
         favoritesPage,
         detailsPage,
@@ -137,6 +139,8 @@ function startSearch(query) {
 }
 
 function getBooks(query) {
+    showPage(loadingPage);
+
     const url =
         `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=10`;
 

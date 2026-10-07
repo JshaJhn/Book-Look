@@ -131,6 +131,49 @@ main {
     background: #eee;
 }
 
+#loading-page {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.loading-container {
+    text-align: center;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 50px;
+    max-width: 600px;
+    width: 100%;
+}
+
+.loading-book {
+    font-size: 60px;
+    margin-bottom: 20px;
+    animation: bookBounce 1s infinite;
+}
+
+.loading-container h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.loading-container p {
+    color: #666;
+    font-size: 16px;
+}
+
+@keyframes bookBounce {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+}
+
 .page-container {
     max-width: 1000px;
     margin: 40px auto;
