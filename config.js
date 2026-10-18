@@ -1,5 +1,5 @@
 /*
- * Book Finder — settings
+ * Book Look — settings
  *
  * Keys in a website are visible to visitors, so restrict your Google key
  * to your website address in Google Cloud Console (see README.md).

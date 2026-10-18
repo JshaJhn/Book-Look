@@ -1,7 +1,7 @@
 "use strict";
 
 /* =========================================================
-   Book Finder — Google Books edition
+   Book Look — Google Books edition
    - One search bar: everything / title / author / genre
    - Popular shelf: NYT Best Sellers (with NYT key) or a
      weekly rotating Google Books spotlight (no extra key)
