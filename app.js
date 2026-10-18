@@ -614,8 +614,14 @@ function googleUrl(path, params = {}) {
     return `${GOOGLE_BOOKS_URL}${path}?${search}`;
 }
 
-async function googleFetch(path, params) {
+async function googleFetch(path, params, retries = 1) {
     const response = await fetch(googleUrl(path, params));
+
+    // Google Books sometimes fails for a moment (500/503) — try once more
+    if (response.status >= 500 && retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, 600));
+        return googleFetch(path, params, retries - 1);
+    }
 
     if (response.status === 429 || response.status === 403) {
         const error = new Error(
@@ -632,30 +638,61 @@ async function googleFetch(path, params) {
     return response.json();
 }
 
-function buildQuery(query, type) {
-    const q = query.trim().replace(/"/g, "");
-    const quoted = q.includes(" ") ? `"${q}"` : q;
+/*
+ * Google Books is picky with genre ("subject:") searches, especially
+ * multi-word genres like "Science Fiction". So each search type has a
+ * list of queries to try, from most exact to most forgiving. The first
+ * one that returns books wins.
+ */
+function queryOptions(query, type) {
+    const q = query.trim().replace(/"/g, "").replace(/\s+/g, " ");
+    const words = q.split(" ");
+    const multi = words.length > 1;
+    const quoted = multi ? `"${q}"` : q;
 
-    if (type === "title") return `intitle:${quoted}`;
-    if (type === "author") return `inauthor:${quoted}`;
-    if (type === "genre") return `subject:${quoted}`;
-    return q;
+    if (type === "title") return unique([`intitle:${quoted}`, `intitle:${words.join(" intitle:")}`, q]);
+    if (type === "author") return unique([`inauthor:${quoted}`, `inauthor:${words.join(" inauthor:")}`, q]);
+
+    if (type === "genre") {
+        return unique([
+            `subject:${quoted}`,                       // subject:"science fiction"
+            `subject:${words.join(" subject:")}`,      // subject:science subject:fiction
+            `subject:${words[0]} ${words.slice(1).join(" ")}`.trim(), // subject:science fiction
+            `"${q}"`,                                  // "science fiction"
+            q                                          // science fiction
+        ]);
+    }
+
+    return [q];
 }
 
-async function fetchBooks(query, type = "all", page = 1) {
-    const data = await googleFetch("", {
-        q: buildQuery(query, type),
-        startIndex: String((page - 1) * PAGE_SIZE),
-        maxResults: String(PAGE_SIZE),
-        printType: "books"
-    });
-
-    return {
-        books: (data.items || []).map(normalizeVolume),
-        total: data.totalItems || 0
-    };
+function unique(list) {
+    return [...new Set(list.filter(Boolean))];
 }
 
+async function fetchBooks(query, type = "all", page = 1, strategy = null) {
+    const options = queryOptions(query, type);
+    const toTry = strategy !== null && options[strategy] ? [strategy] : options.map((_, i) => i);
+
+    let result = { books: [], total: 0, strategy: toTry[0] };
+
+    for (const i of toTry) {
+        const data = await googleFetch("", {
+            q: options[i],
+            startIndex: String((page - 1) * PAGE_SIZE),
+            maxResults: String(PAGE_SIZE),
+            printType: "books",
+            orderBy: "relevance"
+        });
+
+        const books = (data.items || []).map(normalizeVolume);
+        result = { books, total: data.totalItems || 0, strategy: i };
+
+        if (books.length > 0) return result;
+    }
+
+    return result;
+}
 
 /* =========================================================
    Search (one search bar)
@@ -689,7 +726,7 @@ async function runSearch(query, type = "all") {
     showLoading();
 
     try {
-        const { books, total } = await fetchBooks(query, type, 1);
+        const { books, total, strategy } = await fetchBooks(query, type, 1);
         const seen = new Set();
         const fresh = takeNew(books, seen);
 
@@ -698,6 +735,7 @@ async function runSearch(query, type = "all") {
             type,
             page: 1,
             total,
+            strategy,
             seen,
             shown: fresh.length,
             done: books.length < PAGE_SIZE
@@ -742,7 +780,7 @@ $("load-more-btn").addEventListener("click", async () => {
 
     try {
         const nextPage = lastSearch.page + 1;
-        const { books } = await fetchBooks(lastSearch.query, lastSearch.type, nextPage);
+        const { books } = await fetchBooks(lastSearch.query, lastSearch.type, nextPage, lastSearch.strategy);
         const fresh = takeNew(books, lastSearch.seen);
 
         lastSearch.page = nextPage;
