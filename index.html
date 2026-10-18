@@ -3,327 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Book Finder — search millions of books, see what's popular, and keep your own cozy library of favorites.">
+    <meta name="theme-color" content="#1a0f0a">
     <title>Book Finder</title>
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📖%3C/text%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <div class="backdrop" aria-hidden="true">
+        <div class="motes">
+            <span style="--x: 6%;  --d: 0s;  --t: 14s;"></span>
+            <span style="--x: 14%; --d: 3s;  --t: 18s;"></span>
+            <span style="--x: 22%; --d: 7s;  --t: 16s;"></span>
+            <span style="--x: 31%; --d: 1s;  --t: 20s;"></span>
+            <span style="--x: 39%; --d: 9s;  --t: 15s;"></span>
+            <span style="--x: 47%; --d: 4s;  --t: 19s;"></span>
+            <span style="--x: 55%; --d: 11s; --t: 17s;"></span>
+            <span style="--x: 63%; --d: 2s;  --t: 21s;"></span>
+            <span style="--x: 71%; --d: 6s;  --t: 14s;"></span>
+            <span style="--x: 79%; --d: 10s; --t: 18s;"></span>
+            <span style="--x: 87%; --d: 5s;  --t: 16s;"></span>
+            <span style="--x: 94%; --d: 8s;  --t: 20s;"></span>
+        </div>
+    </div>
+
     <header class="navbar">
 
-        <div class="logo">
+        <button class="logo" id="logo-btn" type="button">
+            <span class="logo-mark">✦</span>
             Book Finder
-        </div>
+        </button>
 
         <nav>
-            <button id="home-nav">Home</button>
-            <button id="favorites-nav">Favorites</button>
-            <button id="help-nav">Help</button>
+            <button id="home-nav" type="button">Home</button>
+            <button id="favorites-nav" type="button">
+                Favorites <span class="nav-count" id="favorites-count">0</span>
+            </button>
+            <button id="help-nav" type="button">Help</button>
+            <button id="account-nav" type="button" class="nav-account hidden">☁ Sign In</button>
         </nav>
 
     </header>
 
     <main>
 
+        <!-- ============ HOME ============ -->
         <section id="home-page">
 
-            <div class="search-container">
+            <div class="hero">
+
+                <p class="eyebrow">Welcome to the reading room</p>
 
                 <h1>Find Your Next Book</h1>
 
-                <p>
-                    Search for books by title, author, or topic.
+                <p class="hero-sub">
+                    Search by title, author, or genre — then shelve your finds in your own little library.
                 </p>
 
-                <div class="search-box">
+                <form class="search-box" id="search-form" role="search">
+
+                    <select id="search-type" aria-label="Search by">
+                        <option value="all">Everything</option>
+                        <option value="title">Title</option>
+                        <option value="author">Author</option>
+                        <option value="genre">Genre</option>
+                    </select>
 
                     <input
                         type="text"
                         id="search-input"
                         placeholder="Search for a book..."
+                        autocomplete="off"
                     >
 
-                    <button id="search-btn">
+                    <button id="search-btn" type="submit" class="btn btn-primary">
                         Search
                     </button>
 
-                </div>
+                </form>
 
-                <div class="trending">
-
-                    <h2>Categories</h2>
+                <div class="quick-genres">
+                    <p class="quick-genres-label">or wander into a genre</p>
 
                     <div class="topic-buttons">
+                        <button type="button" class="chip" data-genre="Fantasy">🐉 Fantasy</button>
+                        <button type="button" class="chip" data-genre="Mystery">🔍 Mystery</button>
+                        <button type="button" class="chip" data-genre="Romance">🌹 Romance</button>
+                        <button type="button" class="chip" data-genre="Science Fiction">🚀 Sci-Fi</button>
+                        <button type="button" class="chip" data-genre="Horror">🕯 Horror</button>
+                        <button type="button" class="chip" data-genre="Historical Fiction">🏰 Historical</button>
+                        <button type="button" class="chip" data-genre="Poetry">🪶 Poetry</button>
+                        <button type="button" class="chip" data-genre="History">🗺 History</button>
+                        <button type="button" class="chip" data-genre="Science">🔭 Science</button>
+                        <button type="button" class="chip" data-genre="Computers">💻 Computers</button>
+                        <button type="button" class="chip" data-genre="Philosophy">🦉 Philosophy</button>
+                    </div>
+                </div>
 
-                        <button
-                            class="topic-btn"
-                            data-topic="Computer Science"
-                        >
-                            Computer Science
-                        </button>
+            </div>
 
-                        <button
-                            class="topic-btn"
-                            data-topic="Literature"
-                        >
-                            Literature
-                        </button>
+            <div class="home-shelf">
 
-                        <button
-                            class="topic-btn"
-                            data-topic="History"
-                        >
-                            History
-                        </button>
+                <section class="popular panel" aria-labelledby="popular-title">
 
-                        <button
-                            class="topic-btn"
-                            data-topic="Science"
-                        >
-                            Science
-                        </button>
+                    <div class="popular-header">
+                        <div>
+                            <h2 id="popular-title">Popular This Week</h2>
+                            <p class="page-sub" id="popular-sub"></p>
+                        </div>
 
-                        <button
-                            class="topic-btn"
-                            data-topic="Fantasy"
-                        >
-                            Fantasy
-                        </button>
-
-                        <button
-                            class="topic-btn"
-                            data-topic="Mystery"
-                        >
-                            Mystery
-                        </button>
-
+                        <div class="popular-tabs" id="popular-tabs"></div>
                     </div>
 
-                </div>
+                    <div class="popular-list is-message" id="popular-list">
+                        <p class="muted">Dusting off the shelves…</p>
+                    </div>
+
+                </section>
 
             </div>
 
         </section>
 
 
+        <!-- ============ LOADING ============ -->
         <section id="loading-page" class="hidden">
 
             <div class="loading-container">
 
-                <div class="loading-book"></div>
+                <div class="book-loader" aria-hidden="true">
+                    <div class="page"></div>
+                    <div class="page"></div>
+                    <div class="page"></div>
+                </div>
 
-                <h1>Fetching books....</h1>
+                <h1>Fetching books…</h1>
 
-                <p>
-                    Book look is looking for your book :3
-                </p>
+                <p>The librarian is searching the shelves for you :3</p>
 
             </div>
 
         </section>
 
 
+        <!-- ============ RESULTS ============ -->
         <section id="results-page" class="hidden">
 
             <div class="page-container">
 
                 <div class="page-header">
 
-                    <button id="results-back-btn">
-                        ← Back
-                    </button>
+                    <button id="results-back-btn" type="button" class="btn btn-ghost">← Back</button>
 
-                    <h1 id="results-title">
-                        Search Results
-                    </h1>
+                    <div>
+                        <h1 id="results-title">Search Results</h1>
+                        <p class="page-sub" id="results-count"></p>
+                    </div>
 
                 </div>
 
-                <div id="results-list"></div>
+                <div id="results-list" class="book-grid"></div>
+
+                <div class="load-more-wrap">
+                    <button id="load-more-btn" type="button" class="btn btn-ghost hidden">Load more books</button>
+                </div>
 
             </div>
 
         </section>
 
 
+        <!-- ============ FAVORITES ============ -->
         <section id="favorites-page" class="hidden">
 
             <div class="page-container">
 
                 <div class="page-header">
 
-                    <button id="favorites-back-btn">
-                        ← Back
-                    </button>
+                    <button id="favorites-back-btn" type="button" class="btn btn-ghost">← Back</button>
 
-                    <h1>
-                        My Favorites
-                    </h1>
-
-                </div>
-
-                <div class="favorite-filter">
-
-                    <label for="favorite-status-filter">
-                        Filter by Status:
-                    </label>
-
-                    <select id="favorite-status-filter">
-
-                        <option value="All">
-                            All
-                        </option>
-
-                        <option value="Want to Read">
-                            Want to Read
-                        </option>
-
-                        <option value="Reading">
-                            Reading
-                        </option>
-
-                        <option value="Completed">
-                            Completed
-                        </option>
-
-                        <option value="On Hold">
-                            On Hold
-                        </option>
-
-                    </select>
+                    <div>
+                        <h1>My Favorites</h1>
+                        <p class="page-sub" id="favorites-stats"></p>
+                    </div>
 
                 </div>
 
-                <div id="favorites-list"></div>
+                <p class="sync-note" id="sync-note"></p>
 
-            </div>
+                <div class="panel shelf-panel">
 
-        </section>
+                    <div class="shelf-header">
+                        <h2>Categories</h2>
+                        <button id="add-category-btn" type="button" class="btn btn-ghost btn-small">＋ New Category</button>
+                    </div>
 
+                    <div id="category-tabs" class="category-tabs"></div>
 
-        <section id="details-page" class="hidden">
+                    <div class="favorite-filter">
 
-            <div class="details-container">
+                        <label>
+                            <span>Status</span>
+                            <select id="favorite-status-filter">
+                                <option value="All">All</option>
+                                <option value="Want to Read">Want to Read</option>
+                                <option value="Reading">Reading</option>
+                                <option value="Completed">Completed</option>
+                                <option value="On Hold">On Hold</option>
+                            </select>
+                        </label>
 
-                <div class="details-navigation">
-
-                    <button id="details-back-btn">
-                        ← Back
-                    </button>
-
-                </div>
-
-                <div class="book-details">
-
-                    <img
-                        id="book-cover"
-                        src=""
-                        alt="Book Cover"
-                    >
-
-                    <div class="book-info">
-
-                        <h1 id="book-title"></h1>
-
-                        <p>
-                            <strong>Author:</strong>
-                            <span id="book-author"></span>
-                        </p>
-
-                        <p>
-                            <strong>Publisher:</strong>
-                            <span id="book-publisher"></span>
-                        </p>
-
-                        <p>
-                            <strong>Published:</strong>
-                            <span id="book-date"></span>
-                        </p>
-
-                        <p>
-                            <strong>Pages:</strong>
-                            <span id="book-pages"></span>
-                        </p>
-
-                        <div class="genre-section">
-
-                            <strong>Genres:</strong>
-
-                            <div id="book-genres">
-                                <span>Loading genres...</span>
-                            </div>
-
-                        </div>
-
-                        <div class="favorite-area">
-
-                            <button id="favorite-btn">
-                                Add to Favorites
-                            </button>
-
-                            <div
-                                id="favorite-status-container"
-                                class="hidden"
-                            >
-
-                                <label for="favorite-status">
-                                    Reading Status
-                                </label>
-
-                                <select id="favorite-status">
-
-                                    <option value="Want to Read">
-                                        Want to Read
-                                    </option>
-
-                                    <option value="Reading">
-                                        Reading
-                                    </option>
-
-                                    <option value="Completed">
-                                        Completed
-                                    </option>
-
-                                    <option value="On Hold">
-                                        On Hold
-                                    </option>
-
-                                </select>
-
-                                <button id="save-favorite-btn">
-                                    Save to Favorites
-                                </button>
-
-                                <button
-                                    id="remove-favorite-btn"
-                                    class="hidden"
-                                >
-                                    Remove from Favorites
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                        <a
-                            id="open-book-btn"
-                            href="#"
-                            target="_blank"
-                        >
-                            Open Library
-                        </a>
+                        <label class="grow">
+                            <span>Find in favorites</span>
+                            <input type="text" id="favorite-search" placeholder="Title or author...">
+                        </label>
 
                     </div>
 
                 </div>
 
-                <div class="description">
+                <div id="favorites-list" class="favorites-grid"></div>
 
+            </div>
+
+        </section>
+
+
+        <!-- ============ DETAILS ============ -->
+        <section id="details-page" class="hidden">
+
+            <div class="details-container">
+
+                <div class="details-navigation">
+                    <button id="details-back-btn" type="button" class="btn btn-ghost">← Back</button>
+                </div>
+
+                <div class="book-details panel">
+
+                    <div class="cover-frame">
+                        <img id="book-cover" src="" alt="Book Cover">
+                    </div>
+
+                    <div class="book-info">
+
+                        <h1 id="book-title"></h1>
+                        <p class="book-subtitle hidden" id="book-subtitle"></p>
+
+                        <p class="byline">by <span id="book-author"></span></p>
+
+                        <dl class="facts">
+                            <div><dt>Publisher</dt><dd id="book-publisher"></dd></div>
+                            <div><dt>Published</dt><dd id="book-date"></dd></div>
+                            <div><dt>Pages</dt><dd id="book-pages"></dd></div>
+                            <div><dt>Rating</dt><dd id="book-rating"></dd></div>
+                        </dl>
+
+                        <div class="genre-section">
+                            <h3>Genres <small>— tap one to explore</small></h3>
+                            <div id="book-genres">
+                                <span class="muted">Loading genres...</span>
+                            </div>
+                        </div>
+
+                        <div class="favorite-area">
+
+                            <div class="row">
+                                <button id="favorite-btn" type="button" class="btn btn-primary">♡ Add to Favorites</button>
+
+                                <a id="open-book-btn" class="btn btn-ghost" href="#" target="_blank" rel="noopener">
+                                    View on Google Books ↗
+                                </a>
+                            </div>
+
+                            <div id="favorite-panel" class="favorite-panel hidden">
+
+                                <label>
+                                    <span>Reading Status</span>
+                                    <select id="favorite-status">
+                                        <option value="Want to Read">Want to Read</option>
+                                        <option value="Reading">Reading</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="On Hold">On Hold</option>
+                                    </select>
+                                </label>
+
+                                <label>
+                                    <span>Category</span>
+                                    <select id="favorite-category"></select>
+                                </label>
+
+                                <div class="row">
+                                    <button id="save-favorite-btn" type="button" class="btn btn-primary">Save to Favorites</button>
+                                    <button id="remove-favorite-btn" type="button" class="btn btn-danger hidden">Remove</button>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="description panel">
                     <h2>Description</h2>
-
-                    <p id="book-description">
-                        Loading description...
-                    </p>
-
+                    <p id="book-description">Loading description...</p>
                 </div>
 
             </div>
@@ -331,54 +322,36 @@
         </section>
 
 
+        <!-- ============ HELP ============ -->
         <section id="help-page" class="hidden">
 
-            <div class="message-container">
+            <div class="message-container panel">
 
-                <button id="help-back-btn">
-                    ← Back
-                </button>
+                <button id="help-back-btn" type="button" class="btn btn-ghost">← Back</button>
 
-                <h2>
-                    How to Use Book Finder
-                </h2>
+                <h2>How to Use Book Finder</h2>
 
-                <p>
-                    Search for a book using the search box.
-                </p>
-
-                <p>
-                    You can also select one of the categories.
-                </p>
-
-                <p>
-                    Click View Details to see more information about a book.
-                </p>
-
-                <p>
-                    Click a genre to find more books from that genre.
-                </p>
-
-                <p>
-                    Click Add to Favorites and choose a reading status.
-                </p>
-
-                <p>
-                    Your favorite books are saved in your browser.
-                </p>
+                <ol class="help-list">
+                    <li>Type in the search bar. Use the dropdown to search only by <strong>Title</strong>, <strong>Author</strong>, or <strong>Genre</strong>.</li>
+                    <li>Tap a genre chip under the search bar to jump straight into that genre.</li>
+                    <li>Check the <strong>Popular</strong> shelf on the home page — it changes over time.</li>
+                    <li>Click a book to see its details. Tap a genre tag there to find similar books.</li>
+                    <li>Tap ♡ to add a book to your favorites, then choose a reading status and a category.</li>
+                    <li>On the Favorites page, filter by category or status, and create your own categories.</li>
+                    <li>Without an account, favorites are saved in this browser. Sign in to keep them online on any device.</li>
+                </ol>
 
             </div>
 
         </section>
 
 
+        <!-- ============ MESSAGE ============ -->
         <section id="message-page" class="hidden">
 
-            <div class="message-container">
+            <div class="message-container panel">
 
-                <button id="message-back-btn">
-                    ← Back
-                </button>
+                <button id="message-back-btn" type="button" class="btn btn-ghost">← Back</button>
 
                 <h2 id="message-title"></h2>
 
@@ -390,6 +363,58 @@
 
     </main>
 
+    <footer class="site-footer">
+        Book data from <a href="https://books.google.com" target="_blank" rel="noopener">Google Books</a>
+        <span id="footer-nyt" class="hidden">· Best Seller lists: Data provided by The New York Times</span>
+        · Made with ✦
+    </footer>
+
+
+    <!-- ============ ACCOUNT DIALOG ============ -->
+    <dialog id="account-dialog" class="panel">
+
+        <form method="dialog" class="account-form">
+
+            <button value="cancel" class="dialog-close" aria-label="Close">×</button>
+
+            <h2>Your Library Card</h2>
+
+            <p id="account-intro" class="muted"></p>
+
+            <div id="account-signed-out">
+
+                <label>
+                    <span>Email</span>
+                    <input type="email" id="account-email" autocomplete="email">
+                </label>
+
+                <label>
+                    <span>Password</span>
+                    <input type="password" id="account-password" autocomplete="current-password" minlength="6">
+                </label>
+
+                <div class="row">
+                    <button type="button" id="sign-in-btn" class="btn btn-primary">Sign In</button>
+                    <button type="button" id="sign-up-btn" class="btn btn-ghost">Create Account</button>
+                </div>
+
+            </div>
+
+            <div id="account-signed-in" class="hidden">
+                <p>Signed in as <strong id="account-user"></strong></p>
+                <button type="button" id="sign-out-btn" class="btn btn-ghost">Sign Out</button>
+            </div>
+
+            <p id="account-message" class="form-message"></p>
+
+        </form>
+
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
     <script src="app.js"></script>
 
 </body>
