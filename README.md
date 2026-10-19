@@ -1,7 +1,7 @@
-==================================================
-                    BOOK LOOK
-        A Cozy Library-Themed Book Finder
-==================================================
+
+BOOK LOOK
+-A Cozy Library Themed Book Finder
+================================
 
 
 PROJECT TITLE
